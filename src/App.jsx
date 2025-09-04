@@ -63,10 +63,7 @@ useEffect(() => {
     };
   }, [dragging, startPos, cardOpen]);
 
-  function handleMouseUp() {
-    setDragging(false);
-  }
-
+ 
   return (
     <div className="wrapper">
       <Header />
