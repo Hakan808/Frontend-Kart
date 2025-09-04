@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import './styles.css'
 import Header from './components/Header'
 import FrontMessage from './components/FrontMessage'
@@ -30,23 +30,38 @@ export default function App() {
     setStartPos({ x: e.clientX, y: e.clientY }); 
   }
 
-  function handleMouseMove(e) {
-    if (!dragging) return;
+useEffect(() => {
+    function handleMouseMove(e) {
+      if (!dragging) return;
 
-    const deltaX = e.clientX - startPos.x;
-    const deltaY = e.clientY - startPos.y;
+      const deltaX = e.clientX - startPos.x;
+      const deltaY = e.clientY - startPos.y;
 
-    
-    if (!cardOpen && deltaX <= -50) {
-      setCardOpen(true);
+     
+      if (!cardOpen && deltaX <= -50) {
+        setCardOpen(true);
+        setDragging(false);
+      }
+
+     
+      if (cardOpen && deltaY >= 50) {
+        setCardOpen(false);
+        setDragging(false);
+      }
+    }
+
+    function handleMouseUp() {
       setDragging(false);
     }
 
-    if (cardOpen && deltaY >= 50) {
-      setCardOpen(false);
-      setDragging(false);
-    }
-  }
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragging, startPos, cardOpen]);
 
   function handleMouseUp() {
     setDragging(false);
@@ -61,8 +76,7 @@ export default function App() {
         <div
           className={`cover ${cardOpen ? "open" : ""}`}
           onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          
         >
           <FrontMessage />
           <img src="./images/forLoop.png" alt="loop" />
